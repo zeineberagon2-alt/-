@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مسابقة الدم — 4 فرق 🏆</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --red: #e63946; --red-dark: #c1121f;
+  --t1: #e63946; --t1-light: #ffd6d9; /* فريق الحمراء */
+  --t2: #457b9d; --t2-light: #d4e8f5; /* فريق البيضاء */
+  --t3: #f4a261; --t3-light: #fdebd0; /* فريق البلازما */
+  --t4: #2a9d8f; --t4-light: #d0f0ec; /* فريق الصفيحات */
+  --bg: #f8f9fa; --text: #1d1d2e; --text-soft: #6b7280;
+  --card: #ffffff; --border: #e5e7eb;
+  --radius: 18px; --shadow: 0 4px 20px rgba(0,0,0,0.08);
+}
+* { box-sizing:border-box; margin:0; padding:0; }
+body { font-family:'Cairo','Tajawal',sans-serif; background:var(--bg); min-height:100vh; color:var(--text); }
+
+/* ===== HEADER ===== */
+header {
+  background: linear-gradient(135deg, #e63946, #c1121f, #9b1a28);
+  color:white; text-align:center; padding:24px 20px 18px;
+  position:relative; overflow:hidden;
+  box-shadow:0 4px 24px rgba(193,18,31,0.35);
+}
+header::before { content:'🏆'; position:absolute; font-size:130px; opacity:0.07; top:-20px;left:-10px; animation:spin 25s linear infinite; }
+header::after  { content:'🩸'; position:absolute; font-size:100px; opacity:0.06; bottom:-20px;right:-10px; animation:spin 20s linear infinite reverse; }
+@keyframes spin { to{transform:rotate(360deg)} }
+.header-badge { display:inline-block; background:rgba(255,255,255,0.2); border:1px solid rgba(255,255,255,0.3); border-radius:30px; padding:4px 16px; font-size:12px; font-weight:700; margin-bottom:8px; }
+header h1 { font-family:'Tajawal',sans-serif; font-size:clamp(22px,5vw,34px); font-weight:900; text-shadow:0 2px 10px rgba(0,0,0,0.2); margin-bottom:4px; }
+header p  { font-size:14px; opacity:0.85; }
+
+/* ===== SCREENS ===== */
+.screen { display:none; }
+.screen.active { display:block; }
+
+/* ===== SETUP SCREEN ===== */
+#setup-screen { max-width:700px; margin:0 auto; padding:28px 16px; }
+.setup-title { font-family:'Tajawal',sans-serif; font-size:22px; font-weight:900; text-align:center; margin-bottom:24px; color:var(--text); }
+.teams-setup { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:28px; }
+@media(max-width:500px){ .teams-setup{grid-template-columns:1fr;} }
+
+.team-setup-card {
+  background:white; border-radius:var(--radius); padding:18px;
+  border:3px solid var(--border); box-shadow:var(--shadow);
+  transition:border-color 0.2s;
+}
+.team-setup-card:nth-child(1){ border-color:var(--t1-light); }
+.team-setup-card:nth-child(2){ border-color:var(--t2-light); }
+.team-setup-card:nth-child(3){ border-color:var(--t3-light); }
+.team-setup-card:nth-child(4){ border-color:var(--t4-light); }
+
+.team-color-bar { height:5px; border-radius:3px; margin-bottom:12px; }
+.team-setup-card:nth-child(1) .team-color-bar { background:var(--t1); }
+.team-setup-card:nth-child(2) .team-color-bar { background:var(--t2); }
+.team-setup-card:nth-child(3) .team-color-bar { background:var(--t3); }
+.team-setup-card:nth-child(4) .team-color-bar { background:var(--t4); }
+
+.team-setup-card label { font-size:13px; font-weight:700; color:var(--text-soft); display:block; margin-bottom:6px; }
+.team-name-input {
+  width:100%; border:2px solid var(--border); border-radius:10px;
+  padding:8px 12px; font-family:'Cairo',sans-serif; font-size:14px; font-weight:700;
+  color:var(--text); outline:none; transition:border-color 0.2s;
+}
+.team-setup-card:nth-child(1) .team-name-input:focus { border-color:var(--t1); }
+.team-setup-card:nth-child(2) .team-name-input:focus { border-color:var(--t2); }
+.team-setup-card:nth-child(3) .team-name-input:focus { border-color:var(--t3); }
+.team-setup-card:nth-child(4) .team-name-input:focus { border-color:var(--t4); }
+
+.btn-start {
+  display:block; margin:0 auto;
+  background:linear-gradient(135deg,#e63946,#c1121f);
+  color:white; border:none; border-radius:16px;
+  padding:15px 48px; font-family:'Cairo',sans-serif;
+  font-size:17px; font-weight:900; cursor:pointer;
+  box-shadow:0 4px 20px rgba(193,18,31,0.3);
+  transition:all 0.2s;
+}
+.btn-start:hover { transform:translateY(-2px); box-shadow:0 6px 26px rgba(193,18,31,0.4); }
+
+/* ===== SCOREBOARD (top of game) ===== */
+.scoreboard {
+  display:grid; grid-template-columns:repeat(4,1fr); gap:8px;
+  padding:12px 16px; background:white;
+  border-bottom:2px solid var(--border);
+  position:sticky; top:0; z-index:100;
+  box-shadow:0 2px 8px rgba(0,0,0,0.06);
+}
+.score-team {
+  text-align:center; border-radius:12px; padding:8px 6px;
+  border:2px solid var(--border); transition:all 0.3s;
+  position:relative; overflow:hidden;
+}
+.score-team.active-turn { transform:scale(1.05); box-shadow:0 4px 14px rgba(0,0,0,0.12); }
+.score-team.active-turn::before { content:'▶'; position:absolute; top:2px; right:6px; font-size:10px; }
+
+.score-team:nth-child(1){ border-color:var(--t1-light); }
+.score-team:nth-child(2){ border-color:var(--t2-light); }
+.score-team:nth-child(3){ border-color:var(--t3-light); }
+.score-team:nth-child(4){ border-color:var(--t4-light); }
+.score-team:nth-child(1).active-turn{ background:var(--t1-light); border-color:var(--t1); }
+.score-team:nth-child(2).active-turn{ background:var(--t2-light); border-color:var(--t2); }
+.score-team:nth-child(3).active-turn{ background:var(--t3-light); border-color:var(--t3); }
+.score-team:nth-child(4).active-turn{ background:var(--t4-light); border-color:var(--t4); }
+
+.score-team-name { font-size:11px; font-weight:700; color:var(--text-soft); margin-bottom:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.score-team-pts  { font-family:'Tajawal',sans-serif; font-size:22px; font-weight:900; }
+.score-team:nth-child(1) .score-team-pts { color:var(--t1); }
+.score-team:nth-child(2) .score-team-pts { color:var(--t2); }
+.score-team:nth-child(3) .score-team-pts { color:var(--t3); }
+.score-team:nth-child(4) .score-team-pts { color:var(--t4); }
+
+/* ===== GAME SCREEN ===== */
+#game-screen main { max-width:700px; margin:0 auto; padding:24px 16px 40px; }
+
+/* Turn banner */
+.turn-banner {
+  border-radius:var(--radius); padding:14px 20px;
+  margin-bottom:20px; text-align:center;
+  display:flex; align-items:center; justify-content:center; gap:12px;
+  font-size:16px; font-weight:900;
+  transition:all 0.4s;
+}
+
+/* Progress */
+.progress-bar-wrap { background:#e5e7eb; border-radius:10px; height:8px; margin-bottom:20px; overflow:hidden; }
+.progress-bar-fill { height:100%; border-radius:10px; background:linear-gradient(90deg,#e63946,#f4a261); transition:width 0.5s ease; }
+.progress-label { display:flex; justify-content:space-between; font-size:12px; color:var(--text-soft); font-weight:700; margin-bottom:6px; }
+
+/* Question card */
+.question-card {
+  background:white; border-radius:var(--radius); padding:24px 22px;
+  box-shadow:var(--shadow); margin-bottom:20px;
+  border-top:5px solid var(--red); transition:border-color 0.3s;
+  animation:slideIn 0.35s ease;
+}
+@keyframes slideIn { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+.question-emoji { font-size:36px; display:block; text-align:center; margin-bottom:12px; }
+.question-text { font-family:'Tajawal',sans-serif; font-size:18px; font-weight:900; text-align:center; line-height:1.6; margin-bottom:20px; }
+
+/* Choices */
+.choices { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+@media(max-width:480px){ .choices{grid-template-columns:1fr;} }
+
+.choice-btn {
+  background:var(--bg); border:2.5px solid var(--border);
+  border-radius:14px; padding:13px 16px;
+  font-family:'Cairo',sans-serif; font-size:14px; font-weight:700;
+  cursor:pointer; text-align:center; transition:all 0.2s;
+  display:flex; align-items:center; gap:10px;
+}
+.choice-btn:hover:not(:disabled) { border-color:#ffb3bb; background:#fff5f5; transform:translateY(-2px); }
+.choice-btn .choice-letter { width:28px; height:28px; border-radius:50%; background:var(--border); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:900; flex-shrink:0; transition:all 0.2s; }
+.choice-btn:hover:not(:disabled) .choice-letter { background:var(--red); color:white; }
+.choice-btn.correct { background:#f0fff4; border-color:#2d6a4f; }
+.choice-btn.correct .choice-letter { background:#2d6a4f; color:white; }
+.choice-btn.wrong { background:#fff5f5; border-color:var(--red); }
+.choice-btn.wrong .choice-letter { background:var(--red); color:white; }
+.choice-btn:disabled { cursor:default; }
+
+/* Feedback */
+.feedback-box {
+  border-radius:14px; padding:14px 18px; margin-top:16px;
+  text-align:center; font-size:15px; font-weight:700;
+  display:none; animation:popIn 0.3s ease;
+}
+@keyframes popIn { from{transform:scale(0.8);opacity:0} to{transform:scale(1);opacity:1} }
+.feedback-box.correct { background:#f0fff4; border:2px solid #2d6a4f; color:#2d6a4f; }
+.feedback-box.wrong   { background:#fff5f5; border:2px solid var(--red); color:var(--red-dark); }
+.feedback-box.show { display:block; }
+
+.btn-next {
+  display:none; margin:16px auto 0;
+  background:linear-gradient(135deg,#e63946,#c1121f);
+  color:white; border:none; border-radius:14px;
+  padding:12px 36px; font-family:'Cairo',sans-serif;
+  font-size:15px; font-weight:700; cursor:pointer;
+  box-shadow:0 4px 16px rgba(193,18,31,0.25);
+  transition:all 0.2s;
+}
+.btn-next:hover { transform:translateY(-2px); }
+.btn-next.show { display:block; }
+
+/* ===== RESULTS SCREEN ===== */
+#results-screen { max-width:700px; margin:0 auto; padding:28px 16px 48px; }
+.results-title { font-family:'Tajawal',sans-serif; font-size:26px; font-weight:900; text-align:center; margin-bottom:8px; }
+.results-subtitle { text-align:center; color:var(--text-soft); font-size:14px; margin-bottom:28px; }
+
+.podium { display:flex; align-items:flex-end; justify-content:center; gap:8px; margin-bottom:28px; height:160px; }
+.podium-place { display:flex; flex-direction:column; align-items:center; justify-content:flex-end; }
+.podium-block {
+  border-radius:10px 10px 0 0; width:80px;
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Tajawal',sans-serif; font-size:13px; font-weight:900; color:white;
+  transition:height 0.8s cubic-bezier(0.175,0.885,0.32,1.275);
+}
+.podium-name { font-size:12px; font-weight:700; margin-bottom:6px; text-align:center; max-width:90px; }
+.podium-score { font-size:11px; color:var(--text-soft); margin-top:4px; }
+.podium-crown { font-size:24px; margin-bottom:4px; }
+
+.results-list { display:flex; flex-direction:column; gap:10px; margin-bottom:28px; }
+.result-row {
+  background:white; border-radius:14px; padding:14px 18px;
+  display:flex; align-items:center; gap:14px;
+  box-shadow:var(--shadow); border:2px solid var(--border);
+}
+.result-rank { font-family:'Tajawal',sans-serif; font-size:22px; font-weight:900; width:36px; text-align:center; flex-shrink:0; }
+.result-name { flex:1; font-family:'Tajawal',sans-serif; font-size:17px; font-weight:900; }
+.result-pts  { font-family:'Tajawal',sans-serif; font-size:20px; font-weight:900; }
+.result-correct { font-size:12px; color:var(--text-soft); }
+
+.btn-replay {
+  display:block; margin:0 auto;
+  background:linear-gradient(135deg,#e63946,#c1121f);
+  color:white; border:none; border-radius:16px;
+  padding:14px 44px; font-family:'Cairo',sans-serif;
+  font-size:16px; font-weight:900; cursor:pointer;
+  box-shadow:0 4px 20px rgba(193,18,31,0.3);
+  transition:all 0.2s;
+}
+.btn-replay:hover { transform:translateY(-2px); }
+
+/* CONFETTI */
+.confetti-piece { position:fixed; border-radius:2px; animation:confettiFall linear forwards; pointer-events:none; z-index:9999; }
+@keyframes confettiFall { 0%{transform:translateY(-20px) rotate(0deg);opacity:1} 100%{transform:translateY(100vh) rotate(720deg);opacity:0} }
+
+.kooky-badge { text-align:center; margin-top:24px; font-size:11px; color:#ccc; }
+.kooky-badge strong { color:var(--red); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-badge">🔬 مختبر كوكي الذكي</div>
+  <h1>🏆 مسابقة الدم — 4 فرق</h1>
+  <p>5 أسئلة • الفريق اللي يجاوب أكثر يكسب!</p>
+</header>
+
+<!-- ===== SETUP ===== -->
+<div id="setup-screen" class="screen active">
+  <div class="setup-title">🎯 سمّي الفرق وابدأ المسابقة!</div>
+  <div class="teams-setup">
+    <div class="team-setup-card">
+      <div class="team-color-bar"></div>
+      <label>🔴 الفريق الأول</label>
+      <input class="team-name-input" type="text" id="t1-name" placeholder="فريق الكريات الحمراء" maxlength="20">
+    </div>
+    <div class="team-setup-card">
+      <div class="team-color-bar"></div>
+      <label>🔵 الفريق الثاني</label>
+      <input class="team-name-input" type="text" id="t2-name" placeholder="فريق الكريات البيضاء" maxlength="20">
+    </div>
+    <div class="team-setup-card">
+      <div class="team-color-bar"></div>
+      <label>💛 الفريق الثالث</label>
+      <input class="team-name-input" type="text" id="t3-name" placeholder="فريق البلازما" maxlength="20">
+    </div>
+    <div class="team-setup-card">
+      <div class="team-color-bar"></div>
+      <label>🟤 الفريق الرابع</label>
+      <input class="team-name-input" type="text" id="t4-name" placeholder="فريق الصفيحات" maxlength="20">
+    </div>
+  </div>
+  <button class="btn-start" onclick="startGame()">🚀 ابدأ المسابقة!</button>
+</div>
+
+<!-- ===== GAME ===== -->
+<div id="game-screen" class="screen">
+  <!-- scoreboard -->
+  <div class="scoreboard" id="scoreboard"></div>
+
+  <main>
+    <div class="turn-banner" id="turn-banner"></div>
+
+    <div class="progress-label">
+      <span id="q-label">السؤال 1 من 5</span>
+      <span id="q-points">🎯 20 نقطة</span>
+    </div>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="progress-fill" style="width:20%"></div>
+    </div>
+
+    <div class="question-card" id="question-card">
+      <span class="question-emoji" id="q-emoji"></span>
+      <div class="question-text" id="q-text"></div>
+      <div class="choices" id="choices"></div>
+      <div class="feedback-box" id="feedback"></div>
+    </div>
+
+    <button class="btn-next" id="btn-next" onclick="nextTurn()">التالي ▶</button>
+  </main>
+</div>
+
+<!-- ===== RESULTS ===== -->
+<div id="results-screen" class="screen">
+  <div class="results-title">🏆 نتائج المسابقة!</div>
+  <div class="results-subtitle">برافو على الكل — الدم ما عندو أسرار منك! 🩸</div>
+  <div class="podium" id="podium"></div>
+  <div class="results-list" id="results-list"></div>
+  <button class="btn-replay" onclick="replayGame()">🔄 جولة جديدة</button>
+  <div class="kooky-badge">🤖 <strong>مختبر كوكي الذكي</strong> — إنجاز التلامذة</div>
+</div>
+
+<script>
+// ===== QUESTIONS =====
+const ALL_QUESTIONS = [
+  {
+    emoji:'🩸', points:20,
+    text:'أي مكون من مكونات الدم يحمل الأوكسجين من الرئتين لكل الجسم؟',
+    choices:['البلازما','كريات الدم الحمراء','كريات الدم البيضاء','الصفيحات الدموية'],
+    correct:1
+  },
+  {
+    emoji:'🛡️', points:20,
+    text:'شكون اللي يحمي جسمنا من الجراثيم والأمراض؟',
+    choices:['الصفيحات الدموية','البلازما','كريات الدم الحمراء','كريات الدم البيضاء'],
+    correct:3
+  },
+  {
+    emoji:'🩹', points:20,
+    text:'أشنو يساعد الدم يتجلط ويوقف النزيف عند الجرح؟',
+    choices:['كريات الدم البيضاء','كريات الدم الحمراء','الصفيحات الدموية','البلازما'],
+    correct:2
+  },
+  {
+    emoji:'💛', points:20,
+    text:'أي جزء من الدم يشكّل نسبة كبيرة ويحمل المواد الغذائية والهرمونات؟',
+    choices:['الصفيحات الدموية','البلازما','كريات الدم البيضاء','كريات الدم الحمراء'],
+    correct:1
+  },
+  {
+    emoji:'🔴', points:20,
+    text:'ما هو المادة الموجودة في كريات الدم الحمراء اللي تجعلها تحمل الأوكسجين؟',
+    choices:['الكلوروفيل','الميلانين','الهيموغلوبين','الكيراتين'],
+    correct:2
+  },
+];
+
+const TEAM_COLORS  = ['#e63946','#457b9d','#f4a261','#2a9d8f'];
+const TEAM_LIGHTS  = ['#ffd6d9','#d4e8f5','#fdebd0','#d0f0ec'];
+const TEAM_EMOJIS  = ['🔴','🔵','💛','🟤'];
+const RANK_EMOJIS  = ['🥇','🥈','🥉','4️⃣'];
+
+let teams = [];
+// Each turn: one question per team, rotating
+// Round structure: 5 questions total, teams take turns
+// Turn order: team 0 Q1, team 1 Q2, team 2 Q3, team 3 Q4, team 0 Q5 ... etc
+// Actually: each question = one team answers. 5 questions shared among 4 teams
+// Order: q0→team0, q1→team1, q2→team2, q3→team3, q4→team0
+let turnIndex = 0; // 0..4
+let questions = [];
+let answered = false;
+
+function startGame() {
+  teams = [
+    { name: document.getElementById('t1-name').value || 'فريق الكريات الحمراء', score:0, correct:0 },
+    { name: document.getElementById('t2-name').value || 'فريق الكريات البيضاء', score:0, correct:0 },
+    { name: document.getElementById('t3-name').value || 'فريق البلازما',        score:0, correct:0 },
+    { name: document.getElementById('t4-name').value || 'فريق الصفيحات',       score:0, correct:0 },
+  ];
+  // Shuffle questions
+  questions = [...ALL_QUESTIONS].sort(() => Math.random() - 0.5);
+  turnIndex = 0;
+  showScreen('game-screen');
+  buildScoreboard();
+  showQuestion();
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function buildScoreboard() {
+  const sb = document.getElementById('scoreboard');
+  sb.innerHTML = teams.map((t,i) => `
+    <div class="score-team" id="st-${i}">
+      <div class="score-team-name">${TEAM_EMOJIS[i]} ${t.name}</div>
+      <div class="score-team-pts" id="pts-${i}">0</div>
+    </div>
+  `).join('');
+}
+
+function showQuestion() {
+  answered = false;
+  const q = questions[turnIndex];
+  const teamIdx = turnIndex % 4;
+
+  // Update scoreboard active
+  document.querySelectorAll('.score-team').forEach((el,i) => {
+    el.classList.toggle('active-turn', i === teamIdx);
+  });
+
+  // Turn banner
+  const banner = document.getElementById('turn-banner');
+  banner.style.background = TEAM_LIGHTS[teamIdx];
+  banner.style.border = `2px solid ${TEAM_COLORS[teamIdx]}`;
+  banner.style.color = TEAM_COLORS[teamIdx];
+  banner.innerHTML = `<span style="font-size:22px">${TEAM_EMOJIS[teamIdx]}</span> دور <strong>${teams[teamIdx].name}</strong>`;
+
+  // Progress
+  document.getElementById('q-label').textContent = `السؤال ${turnIndex+1} من ${questions.length}`;
+  document.getElementById('progress-fill').style.width = `${((turnIndex+1)/questions.length)*100}%`;
+
+  // Question
+  document.getElementById('q-emoji').textContent = q.emoji;
+  document.getElementById('q-text').textContent = q.text;
+
+  // Border color
+  document.getElementById('question-card').style.borderTopColor = TEAM_COLORS[teamIdx];
+
+  // Choices
+  const letters = ['أ','ب','ج','د'];
+  document.getElementById('choices').innerHTML = q.choices.map((c,i) => `
+    <button class="choice-btn" onclick="answer(${i},${q.correct},${teamIdx},${q.points})">
+      <span class="choice-letter">${letters[i]}</span>${c}
+    </button>
+  `).join('');
+
+  // Hide feedback & next
+  document.getElementById('feedback').className = 'feedback-box';
+  document.getElementById('btn-next').className = 'btn-next';
+}
+
+function answer(chosen, correct, teamIdx, pts) {
+  if (answered) return;
+  answered = true;
+
+  const btns = document.querySelectorAll('.choice-btn');
+  btns.forEach((b,i) => {
+    b.disabled = true;
+    if (i === correct)  b.classList.add('correct');
+    if (i === chosen && chosen !== correct) b.classList.add('wrong');
+  });
+
+  const fb = document.getElementById('feedback');
+  if (chosen === correct) {
+    teams[teamIdx].score   += pts;
+    teams[teamIdx].correct += 1;
+    document.getElementById(`pts-${teamIdx}`).textContent = teams[teamIdx].score;
+    fb.className = 'feedback-box correct show';
+    fb.innerHTML = `✓ إجابة صحيحة! +${pts} نقطة لـ ${teams[teamIdx].name} 🎉`;
+    miniConfetti(TEAM_COLORS[teamIdx]);
+  } else {
+    fb.className = 'feedback-box wrong show';
+    const correctText = questions[turnIndex].choices[correct];
+    fb.innerHTML = `✗ الجواب الصحيح: <strong>${correctText}</strong>`;
+  }
+
+  document.getElementById('btn-next').className = 'btn-next show';
+  document.getElementById('btn-next').textContent = turnIndex < questions.length-1 ? 'التالي ▶' : '🏁 النتائج!';
+}
+
+function nextTurn() {
+  turnIndex++;
+  if (turnIndex >= questions.length) {
+    showResults();
+  } else {
+    showQuestion();
+  }
+}
+
+function showResults() {
+  showScreen('results-screen');
+
+  // Sort by score
+  const ranked = [...teams].map((t,i) => ({...t, origIdx:i})).sort((a,b) => b.score - a.score);
+
+  // Podium (top 3)
+  const heights = [120, 90, 70, 50];
+  const podiumOrder = [1,0,2,3]; // 2nd, 1st, 3rd, 4th for display
+  const podium = document.getElementById('podium');
+  podium.innerHTML = [1,0,2].map(pos => {
+    const t = ranked[pos];
+    if (!t) return '';
+    const h = heights[pos];
+    return `
+      <div class="podium-place">
+        ${pos===0?'<div class="podium-crown">👑</div>':''}
+        <div class="podium-name">${TEAM_EMOJIS[t.origIdx]} ${t.name}</div>
+        <div class="podium-block" style="height:${h}px;background:${TEAM_COLORS[t.origIdx]}">${RANK_EMOJIS[pos]}</div>
+        <div class="podium-score">${t.score} نقطة</div>
+      </div>
+    `;
+  }).join('');
+
+  // Full list
+  document.getElementById('results-list').innerHTML = ranked.map((t,i) => `
+    <div class="result-row" style="border-color:${TEAM_COLORS[t.origIdx]}20">
+      <div class="result-rank">${RANK_EMOJIS[i]}</div>
+      <div>
+        <div class="result-name">${TEAM_EMOJIS[t.origIdx]} ${t.name}</div>
+        <div class="result-correct">${t.correct} / ${questions.length} أسئلة صحيحة</div>
+      </div>
+      <div class="result-pts" style="color:${TEAM_COLORS[t.origIdx]}">${t.score} نقطة</div>
+    </div>
+  `).join('');
+
+  launchConfetti();
+}
+
+function replayGame() {
+  teams.forEach(t => { t.score=0; t.correct=0; });
+  questions = [...ALL_QUESTIONS].sort(() => Math.random() - 0.5);
+  turnIndex = 0;
+  showScreen('game-screen');
+  buildScoreboard();
+  showQuestion();
+}
+
+function miniConfetti(color) {
+  for (let i=0; i<20; i++) {
+    setTimeout(() => {
+      const c = document.createElement('div');
+      c.className = 'confetti-piece';
+      c.style.cssText = `left:${20+Math.random()*60}vw;top:-10px;background:${color};width:${6+Math.random()*8}px;height:${6+Math.random()*8}px;border-radius:${Math.random()>.5?'50%':'2px'};animation-duration:${1+Math.random()*1.5}s;`;
+      document.body.appendChild(c);
+      setTimeout(() => c.remove(), 2500);
+    }, i*40);
+  }
+}
+
+function launchConfetti() {
+  const colors=['#e63946','#f4a261','#457b9d','#2a9d8f','#ffd60a','#ff8fa3'];
+  for (let i=0;i<80;i++) setTimeout(()=>{
+    const c=document.createElement('div'); c.className='confetti-piece';
+    c.style.cssText=`left:${Math.random()*100}vw;top:-20px;background:${colors[Math.floor(Math.random()*colors.length)]};width:${6+Math.random()*10}px;height:${6+Math.random()*10}px;border-radius:${Math.random()>.5?'50%':'2px'};animation-duration:${1.5+Math.random()*2.5}s;animation-delay:${Math.random()*.5}s;`;
+    document.body.appendChild(c); setTimeout(()=>c.remove(),4000);
+  },i*25);
+}
+</script>
+</body>
+</html>
