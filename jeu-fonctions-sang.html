@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>وظائف مكونات الدم 🩸</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --red: #e63946;
+    --red-dark: #c1121f;
+    --red-light: #ff8fa3;
+    --plasma: #f4a261;
+    --plasma-dark: #e76f51;
+    --white-cell: #457b9d;
+    --white-cell-dark: #1d3557;
+    --platelet: #2a9d8f;
+    --platelet-dark: #1a7a6e;
+    --bg: #fff5f5;
+    --card-bg: #ffffff;
+    --text: #1d1d2e;
+    --shadow: 0 4px 20px rgba(230,57,70,0.12);
+    --radius: 18px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Cairo', 'Tajawal', sans-serif;
+    background: var(--bg);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Animated blood drop background */
+  body::before {
+    content: '';
+    position: fixed;
+    top: -100px; right: -100px;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(230,57,70,0.08) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+    animation: pulse 4s ease-in-out infinite;
+  }
+  body::after {
+    content: '';
+    position: fixed;
+    bottom: -100px; left: -100px;
+    width: 350px; height: 350px;
+    background: radial-gradient(circle, rgba(244,162,97,0.08) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+    animation: pulse 4s ease-in-out infinite 2s;
+  }
+  @keyframes pulse { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.1);opacity:0.7} }
+
+  /* HEADER */
+  header {
+    background: linear-gradient(135deg, #e63946 0%, #c1121f 50%, #9b1a28 100%);
+    color: white;
+    text-align: center;
+    padding: 28px 20px 22px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 24px rgba(193,18,31,0.4);
+  }
+  header::before {
+    content: '🩸';
+    position: absolute;
+    font-size: 120px;
+    opacity: 0.08;
+    top: -20px; left: -20px;
+    animation: spin 20s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .header-badge {
+    display: inline-block;
+    background: rgba(255,255,255,0.2);
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 30px;
+    padding: 4px 16px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+    backdrop-filter: blur(4px);
+  }
+  header h1 {
+    font-family: 'Tajawal', sans-serif;
+    font-size: clamp(22px, 5vw, 36px);
+    font-weight: 900;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    margin-bottom: 6px;
+  }
+  header p {
+    font-size: 14px;
+    opacity: 0.85;
+    font-weight: 400;
+  }
+
+  /* SCORE BAR */
+  .score-bar {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    padding: 14px 20px;
+    background: white;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    flex-wrap: wrap;
+  }
+  .score-chip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg);
+    border-radius: 30px;
+    padding: 6px 16px;
+    font-weight: 700;
+    font-size: 14px;
+    border: 2px solid #ffd6d9;
+    transition: all 0.3s;
+  }
+  .score-chip.active { background: #e63946; color: white; border-color: #e63946; }
+  .score-chip span { font-size: 18px; }
+
+  /* MAIN */
+  main { max-width: 900px; margin: 0 auto; padding: 24px 16px 40px; }
+
+  /* INSTRUCTION */
+  .instruction {
+    background: linear-gradient(135deg, #fff, #fff5f5);
+    border: 2px dashed #ffb3bb;
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    margin-bottom: 28px;
+    text-align: center;
+    font-size: 15px;
+    color: #c1121f;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+  .instruction .icon { font-size: 22px; animation: bounce 1.5s ease-in-out infinite; }
+  @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-5px)} }
+
+  /* GAME LAYOUT */
+  .game-section { margin-bottom: 32px; }
+  .section-title {
+    font-family: 'Tajawal', sans-serif;
+    font-size: 18px;
+    font-weight: 900;
+    color: var(--text);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 2px;
+    background: linear-gradient(to left, transparent, #ffb3bb);
+    border-radius: 2px;
+  }
+
+  /* COMPONENTS GRID */
+  .components-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 14px;
+    margin-bottom: 32px;
+  }
+
+  .component-card {
+    background: white;
+    border-radius: var(--radius);
+    padding: 18px 14px;
+    text-align: center;
+    cursor: grab;
+    border: 3px solid transparent;
+    box-shadow: var(--shadow);
+    transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    user-select: none;
+    position: relative;
+    overflow: hidden;
+  }
+  .component-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    border-radius: 2px 2px 0 0;
+  }
+  .component-card:active { cursor: grabbing; transform: scale(0.96); }
+  .component-card:hover { transform: translateY(-4px) scale(1.02); box-shadow: 0 8px 30px rgba(0,0,0,0.15); }
+  .component-card.dragging { opacity: 0.4; transform: scale(0.95); }
+  .component-card.matched { 
+    cursor: default; 
+    transform: none !important;
+    pointer-events: none;
+  }
+
+  .component-card[data-id="plasma"] { border-color: var(--plasma); }
+  .component-card[data-id="plasma"]::before { background: var(--plasma); }
+  .component-card[data-id="plasma"].matched { background: linear-gradient(135deg, #fff9f5, #fef2e8); }
+
+  .component-card[data-id="red"] { border-color: var(--red); }
+  .component-card[data-id="red"]::before { background: var(--red); }
+  .component-card[data-id="red"].matched { background: linear-gradient(135deg, #fff5f5, #ffe8ea); }
+
+  .component-card[data-id="white"] { border-color: var(--white-cell); }
+  .component-card[data-id="white"]::before { background: var(--white-cell); }
+  .component-card[data-id="white"].matched { background: linear-gradient(135deg, #f5f9ff, #e8f1f8); }
+
+  .component-card[data-id="platelet"] { border-color: var(--platelet); }
+  .component-card[data-id="platelet"]::before { background: var(--platelet); }
+  .component-card[data-id="platelet"].matched { background: linear-gradient(135deg, #f5fffe, #e8f8f5); }
+
+  .component-emoji { font-size: 36px; margin-bottom: 8px; display: block; }
+  .component-name-ar { font-family: 'Tajawal', sans-serif; font-size: 16px; font-weight: 900; color: var(--text); margin-bottom: 2px; }
+  .component-name-fr { font-size: 11px; color: #999; font-weight: 400; direction: ltr; }
+  .matched-check {
+    display: none;
+    position: absolute;
+    top: 8px; left: 8px;
+    width: 22px; height: 22px;
+    background: #2d6a4f;
+    border-radius: 50%;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 12px;
+    font-weight: 900;
+  }
+  .component-card.matched .matched-check { display: flex; }
+
+  /* FUNCTIONS GRID */
+  .functions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 14px;
+  }
+
+  .function-zone {
+    background: white;
+    border-radius: var(--radius);
+    padding: 18px 16px;
+    min-height: 110px;
+    border: 2.5px dashed #ddd;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    transition: all 0.25s;
+    position: relative;
+    overflow: hidden;
+  }
+  .function-zone.drag-over {
+    border-color: #e63946;
+    background: #fff5f5;
+    transform: scale(1.02);
+  }
+  .function-zone.correct {
+    border-style: solid;
+    border-color: #2d6a4f;
+    background: linear-gradient(135deg, #f0fff4, #e8f8f0);
+  }
+  .function-zone.wrong-flash {
+    animation: wrongFlash 0.5s ease;
+  }
+  @keyframes wrongFlash {
+    0%,100%{background:white; border-color:#ddd;}
+    25%{background:#ffe8ea; border-color:#e63946;}
+    75%{background:#ffe8ea; border-color:#e63946;}
+  }
+
+  .function-text {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.5;
+    margin-bottom: 8px;
+  }
+  .function-emoji { font-size: 24px; margin-bottom: 6px; }
+  .drop-hint {
+    font-size: 12px;
+    color: #bbb;
+    font-weight: 400;
+    margin-top: 6px;
+  }
+  .function-zone.correct .drop-hint { display: none; }
+
+  .placed-component {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    margin-top: 8px;
+  }
+  .function-zone.correct .placed-component { display: flex; }
+  .placed-component .mini-emoji { font-size: 20px; }
+  .placed-component .mini-name { font-size: 12px; font-weight: 900; color: #2d6a4f; }
+
+  /* SUCCESS SCREEN */
+  .success-screen {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(6px);
+  }
+  .success-screen.show { display: flex; }
+  .success-card {
+    background: white;
+    border-radius: 28px;
+    padding: 40px 32px;
+    text-align: center;
+    max-width: 380px;
+    width: 90%;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  @keyframes popIn { from{transform:scale(0.5);opacity:0} to{transform:scale(1);opacity:1} }
+  .success-card .big-emoji { font-size: 70px; margin-bottom: 16px; display: block; }
+  .success-card h2 {
+    font-family: 'Tajawal', sans-serif;
+    font-size: 28px;
+    font-weight: 900;
+    color: var(--red);
+    margin-bottom: 8px;
+  }
+  .success-card p { font-size: 16px; color: #555; margin-bottom: 24px; line-height: 1.6; }
+  .star-row { font-size: 32px; margin-bottom: 20px; }
+  .btn-retry {
+    background: linear-gradient(135deg, #e63946, #c1121f);
+    color: white;
+    border: none;
+    border-radius: 14px;
+    padding: 14px 32px;
+    font-family: 'Cairo', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 15px rgba(193,18,31,0.3);
+  }
+  .btn-retry:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(193,18,31,0.4); }
+
+  /* CONFETTI */
+  .confetti-piece {
+    position: fixed;
+    width: 10px; height: 10px;
+    border-radius: 2px;
+    animation: confettiFall linear forwards;
+    pointer-events: none;
+    z-index: 999;
+  }
+  @keyframes confettiFall {
+    0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+  }
+
+  /* RESET BTN */
+  .btn-reset {
+    display: block;
+    margin: 20px auto 0;
+    background: transparent;
+    border: 2.5px solid #e63946;
+    color: #e63946;
+    border-radius: 14px;
+    padding: 10px 28px;
+    font-family: 'Cairo', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-reset:hover { background: #e63946; color: white; }
+
+  /* KOOKY WATERMARK */
+  .kooky-badge {
+    text-align: center;
+    margin-top: 32px;
+    font-size: 12px;
+    color: #ccc;
+    font-weight: 400;
+  }
+  .kooky-badge strong { color: #e63946; }
+
+  @media (max-width: 480px) {
+    .components-grid { grid-template-columns: repeat(2, 1fr); }
+    .functions-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-badge">🔬 مختبر كوكي الذكي</div>
+  <h1>وظائف مكونات الدم</h1>
+  <p>كل مكون عندو دور مهم في جسمنا!</p>
+</header>
+
+<div class="score-bar">
+  <div class="score-chip" id="chip-0"><span>🎯</span> <span id="score-txt">0 / 4</span></div>
+  <div class="score-chip" id="chip-tries"><span>🔄</span> <span id="tries-txt">0 محاولة</span></div>
+  <div class="score-chip" id="chip-status"><span>⏳</span> في الخدمة!</div>
+</div>
+
+<main>
+  <div class="instruction">
+    <span class="icon">👆</span>
+    اسحب كل مكون وحطه على وظيفته الصحيحة!
+  </div>
+
+  <!-- COMPONENTS -->
+  <div class="game-section">
+    <div class="section-title">🩸 المكونات</div>
+    <div class="components-grid" id="components-grid">
+
+      <div class="component-card" data-id="plasma" draggable="true">
+        <div class="matched-check">✓</div>
+        <span class="component-emoji">💛</span>
+        <div class="component-name-ar">البلازما</div>
+        <div class="component-name-fr">Plasma</div>
+      </div>
+
+      <div class="component-card" data-id="red" draggable="true">
+        <div class="matched-check">✓</div>
+        <span class="component-emoji">🔴</span>
+        <div class="component-name-ar">كريات الدم الحمراء</div>
+        <div class="component-name-fr">Globules rouges</div>
+      </div>
+
+      <div class="component-card" data-id="white" draggable="true">
+        <div class="matched-check">✓</div>
+        <span class="component-emoji">⚪</span>
+        <div class="component-name-ar">كريات الدم البيضاء</div>
+        <div class="component-name-fr">Globules blancs</div>
+      </div>
+
+      <div class="component-card" data-id="platelet" draggable="true">
+        <div class="matched-check">✓</div>
+        <span class="component-emoji">🟤</span>
+        <div class="component-name-ar">الصفيحات الدموية</div>
+        <div class="component-name-fr">Plaquettes</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- FUNCTIONS -->
+  <div class="game-section">
+    <div class="section-title">⚡ الوظائف</div>
+    <div class="functions-grid" id="functions-grid">
+
+      <div class="function-zone" data-accept="plasma">
+        <div class="function-emoji">🚛</div>
+        <div class="function-text">تنقل المواد الغذائية والهرمونات في الجسم</div>
+        <div class="drop-hint">↑ حط هنا</div>
+        <div class="placed-component">
+          <span class="mini-emoji">💛</span>
+          <span class="mini-name">البلازما ✓</span>
+        </div>
+      </div>
+
+      <div class="function-zone" data-accept="red">
+        <div class="function-emoji">💨</div>
+        <div class="function-text">تحمل الأوكسجين من الرئتين لكل خلايا الجسم</div>
+        <div class="drop-hint">↑ حط هنا</div>
+        <div class="placed-component">
+          <span class="mini-emoji">🔴</span>
+          <span class="mini-name">كريات حمراء ✓</span>
+        </div>
+      </div>
+
+      <div class="function-zone" data-accept="white">
+        <div class="function-emoji">🛡️</div>
+        <div class="function-text">تحمي الجسم من الجراثيم والأمراض</div>
+        <div class="drop-hint">↑ حط هنا</div>
+        <div class="placed-component">
+          <span class="mini-emoji">⚪</span>
+          <span class="mini-name">كريات بيضاء ✓</span>
+        </div>
+      </div>
+
+      <div class="function-zone" data-accept="platelet">
+        <div class="function-emoji">🩹</div>
+        <div class="function-text">تساعد على تجلط الدم وإيقاف النزيف</div>
+        <div class="drop-hint">↑ حط هنا</div>
+        <div class="placed-component">
+          <span class="mini-emoji">🟤</span>
+          <span class="mini-name">صفيحات ✓</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <button class="btn-reset" onclick="resetGame()">🔄 إعادة اللعبة</button>
+  <div class="kooky-badge">🤖 <strong>مختبر كوكي الذكي</strong> — إنجاز التلامذة</div>
+</main>
+
+<!-- SUCCESS -->
+<div class="success-screen" id="success-screen">
+  <div class="success-card">
+    <span class="big-emoji">🎉</span>
+    <div class="star-row">⭐⭐⭐</div>
+    <h2>برافو عليك!</h2>
+    <p>عرفت وظيفة كل مكون من مكونات الدم — الجسم فرحان بيك! 🩸</p>
+    <button class="btn-retry" onclick="resetGame()">🔄 العب مرة أخرى</button>
+  </div>
+</div>
+
+<script>
+  let draggedId = null;
+  let score = 0;
+  let tries = 0;
+
+  // DRAG EVENTS — Components
+  document.querySelectorAll('.component-card').forEach(card => {
+    card.addEventListener('dragstart', e => {
+      draggedId = card.dataset.id;
+      card.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+    });
+    card.addEventListener('dragend', () => {
+      card.classList.remove('dragging');
+    });
+    // Touch support
+    card.addEventListener('touchstart', e => {
+      draggedId = card.dataset.id;
+      card.classList.add('dragging');
+    }, { passive: true });
+  });
+
+  // DROP EVENTS — Zones
+  document.querySelectorAll('.function-zone').forEach(zone => {
+    zone.addEventListener('dragover', e => {
+      e.preventDefault();
+      if (!zone.classList.contains('correct')) zone.classList.add('drag-over');
+    });
+    zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+    zone.addEventListener('drop', e => {
+      e.preventDefault();
+      zone.classList.remove('drag-over');
+      handleDrop(zone);
+    });
+    // Touch
+    zone.addEventListener('touchend', e => {
+      const touch = e.changedTouches[0];
+      const el = document.elementFromPoint(touch.clientX, touch.clientY);
+      const target = el?.closest('.function-zone');
+      document.querySelectorAll('.component-card').forEach(c => c.classList.remove('dragging'));
+      if (target) handleDrop(target);
+      else draggedId = null;
+    });
+  });
+
+  function handleDrop(zone) {
+    if (!draggedId || zone.classList.contains('correct')) return;
+    tries++;
+    updateTries();
+
+    if (zone.dataset.accept === draggedId) {
+      // CORRECT
+      score++;
+      zone.classList.add('correct');
+      const card = document.querySelector(`.component-card[data-id="${draggedId}"]`);
+      card.classList.add('matched');
+      showFeedback(zone, true);
+      updateScore();
+      if (score === 4) setTimeout(showSuccess, 800);
+    } else {
+      // WRONG
+      zone.classList.add('wrong-flash');
+      setTimeout(() => zone.classList.remove('wrong-flash'), 500);
+      showFeedback(zone, false);
+    }
+    draggedId = null;
+  }
+
+  function showFeedback(zone, correct) {
+    const msg = document.createElement('div');
+    msg.style.cssText = `
+      position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
+      background:${correct ? '#2d6a4f' : '#e63946'}; color:white;
+      padding:12px 24px; border-radius:12px; font-weight:900; font-size:18px;
+      z-index:500; animation:popIn 0.3s ease; pointer-events:none;
+      font-family:'Cairo',sans-serif;
+    `;
+    msg.textContent = correct ? '✓ صح!' : '✗ حاول مرة أخرى!';
+    document.body.appendChild(msg);
+    setTimeout(() => msg.remove(), 900);
+  }
+
+  function updateScore() {
+    document.getElementById('score-txt').textContent = `${score} / 4`;
+    if (score > 0) {
+      document.getElementById('chip-0').classList.add('active');
+    }
+  }
+
+  function updateTries() {
+    document.getElementById('tries-txt').textContent = `${tries} محاولة`;
+  }
+
+  function showSuccess() {
+    document.getElementById('success-screen').classList.add('show');
+    launchConfetti();
+    document.getElementById('chip-status').innerHTML = '<span>🏆</span> أحسنت!';
+    document.getElementById('chip-status').classList.add('active');
+  }
+
+  function launchConfetti() {
+    const colors = ['#e63946','#f4a261','#457b9d','#2a9d8f','#ffd60a','#ff8fa3'];
+    for (let i = 0; i < 60; i++) {
+      setTimeout(() => {
+        const c = document.createElement('div');
+        c.className = 'confetti-piece';
+        c.style.cssText = `
+          left:${Math.random()*100}vw;
+          top:-20px;
+          background:${colors[Math.floor(Math.random()*colors.length)]};
+          width:${6+Math.random()*10}px;
+          height:${6+Math.random()*10}px;
+          border-radius:${Math.random()>0.5?'50%':'2px'};
+          animation-duration:${1.5+Math.random()*2}s;
+          animation-delay:${Math.random()*0.5}s;
+        `;
+        document.body.appendChild(c);
+        setTimeout(() => c.remove(), 3000);
+      }, i * 30);
+    }
+  }
+
+  function resetGame() {
+    score = 0; tries = 0;
+    document.getElementById('score-txt').textContent = '0 / 4';
+    document.getElementById('tries-txt').textContent = '0 محاولة';
+    document.getElementById('chip-0').classList.remove('active');
+    document.getElementById('chip-status').innerHTML = '<span>⏳</span> في الخدمة!';
+    document.getElementById('chip-status').classList.remove('active');
+    document.querySelectorAll('.component-card').forEach(c => c.classList.remove('matched'));
+    document.querySelectorAll('.function-zone').forEach(z => z.classList.remove('correct','wrong-flash'));
+    document.getElementById('success-screen').classList.remove('show');
+    draggedId = null;
+  }
+</script>
+</body>
+</html>
